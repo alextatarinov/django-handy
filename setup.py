@@ -1,8 +1,7 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import os
 import re
 import sys
+
 
 try:
     from setuptools import setup
@@ -23,10 +22,10 @@ def get_version(*file_paths):
 
 version = get_version("django_handy", "__init__.py")
 
-
 if sys.argv[-1] == 'publish':
     try:
         import wheel
+
         print("Wheel version: ", wheel.__version__)
     except ImportError:
         print('Wheel library missing. Please run "pip install wheel"')
@@ -56,7 +55,7 @@ setup(
         'django_handy',
     ],
     include_package_data=True,
-    install_requires=[],
+    install_requires=['djangorestframework>=3.8', 'django>=1.11', 'django-manager-utils'],
     license="MIT",
     zip_safe=False,
     keywords='django-handy',
@@ -67,9 +66,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',

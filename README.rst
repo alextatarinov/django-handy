@@ -31,22 +31,9 @@ Add it to your `INSTALLED_APPS`:
 
     INSTALLED_APPS = (
         ...
-        'django_handy.apps.DjangoHandyConfig',
+        'django_handy',
         ...
     )
-
-Add Django Handy's URL patterns:
-
-.. code-block:: python
-
-    from django_handy import urls as django_handy_urls
-
-
-    urlpatterns = [
-        ...
-        url(r'^', include(django_handy_urls)),
-        ...
-    ]
 
 Features
 --------
