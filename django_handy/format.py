@@ -7,18 +7,23 @@ from django_handy.helpers import d_round
 not_human_chars = re.compile('([_.])')
 
 
-def humanize(field_name: str) -> str:
-    field_name = not_human_chars.sub(' ', field_name).strip()
-    return field_name.capitalize()
+def humanize(origin: str) -> str:
+    """
+        Converts string to be more human-readable.
+        Replaces dots and underscores with spaces, capitalize result.
+        Can be used to display model fields names to user. (similar to django admin)
+    """
+    humanized = not_human_chars.sub(' ', origin).strip()
+    return humanized.capitalize()
 
 
 def strip_zeros(val, keep=0):
     """
-    Strips trailing zeros but keeps at least `keep` zeros
+        Strips trailing zeros but keeps at least `keep` zeros
 
-    strip_zeros(12, 2) -> 12.00
-    strip_zeros(12.00) -> 12
-    strip_zeros(12.001, 2) -> 12.001
+        strip_zeros(12, 2) -> 12.00
+        strip_zeros(12.00) -> 12
+        strip_zeros(12.001, 2) -> 12.001
 
     """
     if val is None:

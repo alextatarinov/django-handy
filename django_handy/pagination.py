@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 
 def _get_count(queryset):
-    """Determine an object count, supporting either queryset or regular list."""
+    """Determine an object count, supporting either queryset or regular list. Optimized to use only `id`"""
     try:
         return queryset.values('id').count()
     except (AttributeError, TypeError):
@@ -21,6 +21,7 @@ class ModifiedDjangoPaginator(DjangoPaginator):
 
 
 class DefaultPaginator(PageNumberPagination):
+    """Use optimized .count() and add page number to response"""
     page_size = 20
     django_paginator_class = ModifiedDjangoPaginator
 
@@ -35,6 +36,7 @@ class DefaultPaginator(PageNumberPagination):
 
 
 class LimitOffsetPaginator(LimitOffsetPagination):
+    """Use optimized .count()"""
     default_limit = 6
 
     def get_count(self, queryset):

@@ -1,10 +1,11 @@
 import mimetypes
+from collections import Hashable, Iterable, Sized
 from decimal import Decimal
 from functools import wraps
 from typing import Dict, List
 
 import collections
-from django.db import models, transaction
+from django.db import transaction
 from django.http import HttpResponse
 from django.utils.encoding import force_text
 
@@ -61,24 +62,26 @@ def simple_urljoin(*args):
 
         piece = piece.strip('/')
 
-        if '://' in piece:
-            res = piece
-
         if add_leading_slash:
-            res = sep + res
+            piece = sep + piece
 
         if add_trailing_slash:
-            res += sep
+            piece += sep
+
+        if '://' in piece:
+            res = piece
+        else:
+            res += piece
 
     return res
 
 
 def get_attribute(instance, name):
     """
-    Similar to Python's built in `getattr(instance, attr)`,
-    but takes a list of nested attributes, instead of a single attribute.
+        Similar to Python's built in `getattr(instance, attr)`,
+        but takes a list of nested attributes, instead of a single attribute.
 
-    Also accepts either attribute lookup on objects or dictionary lookups.
+        Also accepts either attribute lookup on objects or dictionary lookups.
     """
 
     attrs = name.split('.')
@@ -106,32 +109,52 @@ def has_attribute(obj, name):
 
 
 def bulk_dict_update(dicts_list: List[Dict], update_dict: Dict):
+    """As name says, update list of dicts with single dict by calling .update"""
     for dict_ in dicts_list:
         dict_.update(update_dict)
 
 
 def is_empty(val):
-    if val is None or val == '' or val == []:
+    """
+        Check where value is logically `empty` - does not contain information.
+        False and 0 are not considered empty, but empty collections are.
+    """
+    if val is None or isinstance(val, Sized) and len(val) == 0:  # Empty string is also Sized of len 0
         return True
     return False
 
 
 def all_not_empty(obj, *attrs):
+    """
+        If all attrs of obj returns False for is_empty check, returns True.
+        Otherwise, returns False
+    """
     return all(not is_empty(get_attribute(obj, field)) for field in attrs)
 
 
 def any_not_empty(obj, *attrs):
+    """
+        If at least one of the attrs of obj returns False for is_empty check, returns True.
+        Otherwise, returns False
+    """
     return any(not is_empty(get_attribute(obj, field)) for field in attrs)
 
 
 def join_not_empty(separator, *args):
+    """
+       Like str.join, but ignores empty values to prevent duplicated separator
+    """
     return separator.join(arg for arg in args if not is_empty(arg))
 
 
-def unique_ordered(seq):
+def unique_ordered(sequence: Iterable[Hashable]) -> List:
+    """
+       Get list of unique values from sequence,
+        preserving order when the value first occurred in original sequence
+    """
     seen = set()
     unique = []
-    for x in seq:
+    for x in sequence:
         if x not in seen:
             unique.append(x)
             seen.add(x)
@@ -156,11 +179,16 @@ class UpdateDict(dict):
             return default
 
 
-def get_unique_objs(objs: List[models.Model], unique_fields: List[str]) -> List[models.Model]:
+def get_unique_objs(objs: List[object], unique_attrs: List[str]) -> List[object]:
+    """
+       Get list of unique objs from sequence,
+        preserving order when the objs first occurred in original sequence
+    """
+
     seen_obj_footprints = set()
     unique_objs = []
     for obj in objs:
-        obj_footprint = tuple(getattr(obj, field) for field in unique_fields)
+        obj_footprint = tuple(get_attribute(obj, field) for field in unique_attrs)
         if obj_footprint in seen_obj_footprints:
             continue
 
@@ -170,6 +198,7 @@ def get_unique_objs(objs: List[models.Model], unique_fields: List[str]) -> List[
 
 
 def d_round(value, places=2):
+    """Decimal version of round() builtin"""
     assert isinstance(places, int)
     quantize_to = Decimal(10) ** (-places)
     return Decimal(value).quantize(quantize_to)
@@ -177,8 +206,8 @@ def d_round(value, places=2):
 
 def call_on_commit(func):
     """
-    Only call the decorated function at transaction commit.
-    The return value will be ignored
+        Only call the decorated function at transaction commit.
+        The return value will be ignored
     """
 
     @wraps(func)

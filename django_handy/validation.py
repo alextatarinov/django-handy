@@ -20,7 +20,7 @@ class UpperCasePasswordValidator:
         return _('Your password should contain at least one capital letter.')
 
 
-class MaximumLengthValidator:
+class MaximumLengthPasswordValidator:
     """Validate whether the password is of a maximum length."""
 
     def __init__(self, max_length=20):
