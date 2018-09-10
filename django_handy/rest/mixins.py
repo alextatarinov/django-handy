@@ -1,7 +1,15 @@
 from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
 
 
-class HiddenAttributesModel:
+class HiddenAttributesMeta(type):
+    """Raise AttributeError when accessing hidden_attributes on class itself"""
+    def __getattribute__(self, name):
+        if name in super().__getattribute__('hidden_attributes'):
+            raise AttributeError(name)
+        return super().__getattribute__(name)
+
+
+class HiddenAttributes(metaclass=HiddenAttributesMeta):
     """Raise AttributeError when accessing hidden_attributes"""
     hidden_attributes = []
 
@@ -11,15 +19,15 @@ class HiddenAttributesModel:
         return super().__getattribute__(name)
 
 
-class PutModelMixin(HiddenAttributesModel, UpdateModelMixin):
+class PutModelMixin(HiddenAttributes, UpdateModelMixin):
     hidden_attributes = ['partial_update']
 
 
-class PatchModelMixin(HiddenAttributesModel, UpdateModelMixin):
+class PatchModelMixin(HiddenAttributes, UpdateModelMixin):
     hidden_attributes = ['update']
 
 
-class UpdateViaCreateMixin(HiddenAttributesModel, UpdateModelMixin):
+class UpdateViaCreateMixin(HiddenAttributes, UpdateModelMixin):
     """
         Update model instance via POST.
 
@@ -32,7 +40,7 @@ class UpdateViaCreateMixin(HiddenAttributesModel, UpdateModelMixin):
         return super().update(request, *args, **kwargs)
 
 
-class RetrieveViaListMixin(HiddenAttributesModel, RetrieveModelMixin):
+class RetrieveViaListMixin(HiddenAttributes, RetrieveModelMixin):
     """
        Retrieve model instance via GET.
 
