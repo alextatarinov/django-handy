@@ -9,25 +9,20 @@ class HiddenAttributesMeta(type):
         return super().__getattribute__(name)
 
 
-class HiddenAttributes(metaclass=HiddenAttributesMeta):
-    """Raise AttributeError when accessing hidden_attributes"""
-    hidden_attributes = []
-
-    def __getattribute__(self, name):
-        if name in super().__getattribute__('hidden_attributes'):
-            raise AttributeError(name)
-        return super().__getattribute__(name)
+class HiddenClassAttributes(metaclass=HiddenAttributesMeta):
+    """Raise AttributeError when accessing hidden_attributes on class but allow accessing them on instance"""
+    pass
 
 
-class PutModelMixin(HiddenAttributes, UpdateModelMixin):
+class PutModelMixin(HiddenClassAttributes, UpdateModelMixin):
     hidden_attributes = ['partial_update']
 
 
-class PatchModelMixin(HiddenAttributes, UpdateModelMixin):
+class PatchModelMixin(HiddenClassAttributes, UpdateModelMixin):
     hidden_attributes = ['update']
 
 
-class UpdateViaCreateMixin(HiddenAttributes, UpdateModelMixin):
+class UpdateViaCreateMixin(HiddenClassAttributes, UpdateModelMixin):
     """
         Update model instance via POST.
 
@@ -40,7 +35,7 @@ class UpdateViaCreateMixin(HiddenAttributes, UpdateModelMixin):
         return super().update(request, *args, **kwargs)
 
 
-class RetrieveViaListMixin(HiddenAttributes, RetrieveModelMixin):
+class RetrieveViaListMixin(HiddenClassAttributes, RetrieveModelMixin):
     """
        Retrieve model instance via GET.
 
