@@ -13,11 +13,6 @@ Django Handy
 
 Set of handy helpers for developing Django web applications.
 
-Documentation
--------------
-
-The full documentation is at https://django-handy.readthedocs.io.
-
 Quickstart
 ----------
 
@@ -39,25 +34,3 @@ Features
 --------
 
 * TODO
-
-Running Tests
--------------
-
-Does the code actually work?
-
-::
-
-    source <YOURVIRTUALENV>/bin/activate
-    (myenv) $ pip install tox
-    (myenv) $ tox
-
-Credits
--------
-
-Tools used in rendering this package:
-
-*  Cookiecutter_
-*  `cookiecutter-djangopackage`_
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`cookiecutter-djangopackage`: https://github.com/pydanny/cookiecutter-djangopackage

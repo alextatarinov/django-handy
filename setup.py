@@ -40,15 +40,12 @@ if sys.argv[-1] == 'tag':
     os.system("git push --tags")
     sys.exit()
 
-readme = open('README.rst').read()
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
-
 setup(
     name='django-handy',
     version=version,
     license="MIT",
     description='Set of handy helpers for developing Django web applications.',
-    long_description=readme + '\n\n' + history,
+    long_description=open('README.rst').read(),
     author='Alexandr Tatarinov',
     author_email='tatarinov1997@gmail.com',
     url='https://github.com/tatarinov1997/django-handy',
