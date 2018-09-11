@@ -1,8 +1,8 @@
 import mimetypes
-from collections import Hashable, Iterable, Sized
+from collections import Sized
 from decimal import Decimal
 from functools import wraps
-from typing import Dict, List
+from typing import Dict, List, Iterable, Hashable
 
 import collections
 from django.db import transaction
