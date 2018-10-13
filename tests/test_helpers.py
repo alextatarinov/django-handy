@@ -7,6 +7,7 @@ from django_handy.helpers import (
     all_not_empty,
     any_not_empty,
     join_not_empty,
+    unique_ordered,
 )
 
 
@@ -131,3 +132,6 @@ class TestHelpers(TestCase):
     def test_join_not_empty(self):
         self.assertEqual(join_not_empty(', ', 'New York', '', 'Baker Street', None), 'New York, Baker Street')
         self.assertEqual(join_not_empty(', '), '')
+
+    def test_unique_ordered(self):
+        self.assertEqual(unique_ordered([8, 1, 2, 2, 4, 5, 4, 8]), [8, 1, 2, 4, 5])
