@@ -6,18 +6,17 @@ from django.template.loader import render_to_string
 
 
 def send_email(
-    subject, message, recipient,
+    subject, message, recipient: str,
     attachments: Optional[List[Tuple[str, bytes]]] = None
 ):
     mail = EmailMultiAlternatives(
         subject=subject,
-        body='',
         from_email=settings.EMAIL_HOST_USER,
         to=[recipient],
         attachments=attachments
     )
     mail.attach_alternative(message, 'text/html')
-    mail.send()
+    return mail.send()
 
 
 def send_template_email(

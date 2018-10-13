@@ -1,7 +1,7 @@
 import re
 from decimal import Decimal
 
-from django_handy.helpers import d_round
+from .helpers import d_round
 
 
 not_human_chars = re.compile('([_.])')

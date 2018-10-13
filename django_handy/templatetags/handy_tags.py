@@ -1,8 +1,8 @@
 from django import template
 from django.utils.safestring import mark_safe
 
-from django_handy.format import humanize, strip_zeros
-from django_handy.helpers import is_empty
+from ..format import humanize, strip_zeros
+from ..helpers import is_empty
 
 
 register = template.Library()

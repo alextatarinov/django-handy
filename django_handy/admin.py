@@ -1,9 +1,10 @@
 from django.contrib.admin.utils import flatten_fieldsets
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.inspect import get_func_args
 
-from django_handy.models.helpers import is_editable
 from .helpers import get_attribute, has_attribute
+from .models.helpers import is_editable
 
 
 class ChangeUrl:
@@ -12,11 +13,11 @@ class ChangeUrl:
         self.short_description = description or field
 
     def __call__(self, obj):
-        for part in self.field.split('__'):
-            obj = getattr(obj, part)
-
-        if obj is None:
+        try:
+            obj = get_attribute(obj, self.field)
+        except AttributeError:
             return '-'
+
         url = object_admin_rel_url(obj)
         return format_html('<a href="{}">{}</a>', url, obj)
 
@@ -51,7 +52,13 @@ class ReadOnlyFieldsAdminMixin:
     exclude = []
 
     def get_readonly_fields(self, request, obj=None):
-        if obj is None and self.has_add_permission(request):
+        args = get_func_args(self.has_add_permission)
+        if 'obj' in args:
+            has_add_permission = self.has_add_permission(request, obj)
+        else:
+            has_add_permission = self.has_add_permission(request)
+
+        if obj is None and has_add_permission:
             return super().get_readonly_fields(request, obj)
 
         if self.fields or self.fieldsets:

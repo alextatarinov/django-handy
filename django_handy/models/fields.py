@@ -2,7 +2,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from django_handy.helpers import unique_ordered
+from ..helpers import unique_ordered
 
 
 class PositiveDecimalField(models.DecimalField):
