@@ -63,7 +63,6 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Framework :: Django',
         'Framework :: Django :: 1.11',
@@ -71,5 +70,5 @@ setup(
         'Framework :: Django :: 2.1',
     ],
     zip_safe=False,
-    tests_require=['Django>=1.11', 'djangorestframework>=3.8', 'django-manager-utils'],
+    tests_require=['Django>=1.11', 'djangorestframework>=3.8', 'django-manager-utils', 'psycopg2'],
 )

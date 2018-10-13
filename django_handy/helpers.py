@@ -16,7 +16,7 @@ def create_attachment_response(filename, content: bytes):
          for given content and filename
     """
     response = HttpResponse(content=content)
-    response['Content-Disposition'] = 'inline; filename="{filename}"'.format(filename=filename)
+    response['Content-Disposition'] = f'inline; filename="{filename}"'
 
     mime_type, encoding = mimetypes.guess_type(filename)
     if mime_type is None:
