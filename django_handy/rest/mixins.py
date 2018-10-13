@@ -12,7 +12,7 @@ class HiddenAttributesMeta(type):
 
 class HiddenClassAttributes(metaclass=HiddenAttributesMeta):
     """Raise AttributeError when accessing hidden_attributes on class but allow accessing them on instance"""
-    pass
+    hidden_attributes = []
 
 
 class HiddenUpdateMixin(HiddenClassAttributes, UpdateModelMixin):
