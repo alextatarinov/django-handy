@@ -3,6 +3,7 @@ from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
 
 class HiddenAttributesMeta(type):
     """Raise AttributeError when accessing hidden_attributes on class itself"""
+
     def __getattribute__(self, name):
         if name in super().__getattribute__('hidden_attributes'):
             raise AttributeError(name)
@@ -14,23 +15,28 @@ class HiddenClassAttributes(metaclass=HiddenAttributesMeta):
     pass
 
 
-class PutModelMixin(HiddenClassAttributes, UpdateModelMixin):
+class HiddenUpdateMixin(HiddenClassAttributes, UpdateModelMixin):
+    """
+        Provides access to UpdateModelMixin methods, while not exposing them to API
+    """
+    hidden_attributes = ['partial_update', 'update']
+
+
+class PutModelMixin(HiddenUpdateMixin):
     hidden_attributes = ['partial_update']
 
 
-class PatchModelMixin(HiddenClassAttributes, UpdateModelMixin):
+class PatchModelMixin(HiddenUpdateMixin):
     hidden_attributes = ['update']
 
 
-class UpdateViaCreateMixin(HiddenClassAttributes, UpdateModelMixin):
+class UpdateViaCreateMixin(HiddenUpdateMixin):
     """
         Update model instance via POST.
 
         This can be used in cases when only one model instance exists - i.e. user profile.
         Using just UpdateModelMixin is not suitable, because it requires to pass object pk.
     """
-    hidden_attributes = ['partial_update', 'update']
-
     def create(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
 
