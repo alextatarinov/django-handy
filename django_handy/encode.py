@@ -26,7 +26,7 @@ class Encoder:
         self.valid_chars = valid_chars
 
     @classmethod
-    @lru_cache(maxsize=10)
+    @lru_cache()
     def find_suitable_period(cls, size, valid_chars):
         """
             Automatically find a suitable period to use.
@@ -98,7 +98,7 @@ class Encoder:
         return self.friendly_number(self.perfect_hash(num))
 
 
-def encode(num, size=100000000, valid_chars='3456789ACDEFGHJKLQRSTUVWXY'):
+def encode(num, size=100_000_000, valid_chars='3456789ACDEFGHJKLQRSTUVWXY'):
     """
         Encode a simple number, using a perfect hash and converting to a
         more user friendly string of characters.
