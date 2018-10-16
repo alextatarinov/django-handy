@@ -2,12 +2,10 @@ from copy import copy
 from types import SimpleNamespace
 
 from django.test import TestCase
+
 from django_handy.helpers import (
-    simple_urljoin, get_attribute, has_attribute, bulk_dict_update, is_empty,
-    all_not_empty,
-    any_not_empty,
-    join_not_empty,
-    unique_ordered,
+    all_not_empty, any_not_empty, bulk_dict_update, get_attribute, has_attribute, is_empty, join_not_empty,
+    simple_urljoin, unique_ordered,
 )
 
 
@@ -34,6 +32,7 @@ class TestHelpers(TestCase):
             ['https://google.com', 'search/', '/all'],
 
             ['https://google.com', 'search', 'all/'],
+            ['https://', 'google.com', 'search', 'all/'],
 
             ['http://facebook.com/', 'https://google.com', 'search', 'all'],
 
@@ -48,6 +47,7 @@ class TestHelpers(TestCase):
             'https://google.com/search/all',
             'https://google.com/search/all',
 
+            'https://google.com/search/all/',
             'https://google.com/search/all/',
 
             'https://google.com/search/all',

@@ -41,6 +41,7 @@ def simple_urljoin(*args):
         Preserves single trailing and leading slash.
     """
     sep = '/'
+    protocol_sep = '://'
     res = ''
 
     for idx, piece in enumerate(args):
@@ -60,7 +61,11 @@ def simple_urljoin(*args):
         if not is_last:
             add_trailing_slash = True
 
-        piece = piece.strip('/')
+        if piece.endswith(protocol_sep):
+            piece = piece.lstrip('/')
+            add_trailing_slash = False
+        else:
+            piece = piece.strip('/')
 
         if add_leading_slash:
             piece = sep + piece
@@ -68,7 +73,7 @@ def simple_urljoin(*args):
         if add_trailing_slash:
             piece += sep
 
-        if '://' in piece:
+        if protocol_sep in piece:
             res = piece
         else:
             res += piece
