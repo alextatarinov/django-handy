@@ -3,6 +3,7 @@ from collections import Sized
 from decimal import Decimal
 from functools import wraps
 from typing import Dict, Hashable, Iterable, List
+from urllib.parse import quote
 
 import collections
 from django.db import transaction
@@ -16,7 +17,8 @@ def create_attachment_response(filename, content: bytes):
          for given content and filename
     """
     response = HttpResponse(content=content)
-    response['Content-Disposition'] = f'inline; filename="{filename}"'
+    safe_filename = quote(filename)
+    response['Content-Disposition'] = f'inline; filename="{safe_filename}"'
 
     mime_type, encoding = mimetypes.guess_type(filename)
     if mime_type is None:
