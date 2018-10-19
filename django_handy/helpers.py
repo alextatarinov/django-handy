@@ -3,7 +3,7 @@ from collections import Sized
 from decimal import Decimal
 from functools import wraps
 from typing import Dict, Hashable, Iterable, List
-from urllib.parse import quote
+from urllib.parse import parse_qs, quote, urlencode, urlsplit, urlunsplit
 
 import collections
 from django.db import transaction
@@ -81,6 +81,16 @@ def simple_urljoin(*args):
             res += piece
 
     return res
+
+
+def add_query(url: str, **params: Dict[str, str]):
+    scheme, netloc, path, query_string, fragment = urlsplit(url)
+    query_params = parse_qs(query_string)
+
+    query_params.update(params)
+    new_query_string = urlencode(query_params, doseq=True)
+
+    return urlunsplit((scheme, netloc, path, new_query_string, fragment))
 
 
 def get_attribute(instance, name):
