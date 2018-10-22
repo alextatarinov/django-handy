@@ -83,7 +83,7 @@ def simple_urljoin(*args):
     return res
 
 
-def add_query(url: str, **params: Dict[str, str]):
+def add_query(url: str, **params: str):
     scheme, netloc, path, query_string, fragment = urlsplit(url)
     query_params = parse_qs(query_string)
 
