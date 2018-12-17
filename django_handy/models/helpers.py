@@ -19,6 +19,7 @@ def get_bulk_update_fields(cls: Type[models.Model], unique_fields: List[str] = N
         return (
             field.name not in unique_fields and
             not (field.many_to_many or field.one_to_many)
+            and not field.auto_created
         )
 
     return [
