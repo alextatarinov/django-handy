@@ -21,6 +21,9 @@ class ChangeUrl:
         except AttributeError:
             return '-'
 
+        if not obj:
+            return '-'
+
         url = object_admin_rel_url(obj)
         return format_html('<a href="{}">{}</a>', url, obj)
 
