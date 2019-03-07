@@ -52,7 +52,7 @@ setup(
     packages=[
         'django_handy'
     ],
-    install_requires=['Django>=1.11', 'djangorestframework>=3.8', 'django-manager-utils'],
+    install_requires=['Django>=1.11', 'djangorestframework>=3.8', 'django-manager-utils', 'Pillow'],
     include_package_data=True,
     keywords='django-handy',
     classifiers=[

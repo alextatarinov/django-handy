@@ -1,3 +1,4 @@
+from PIL import Image
 from django.core.exceptions import ValidationError
 from django.core.validators import BaseValidator
 from django.forms import forms
@@ -76,7 +77,12 @@ class ImageSizeValidator(FileSizeValidator):
     def __call__(self, value):
         super().__call__(value)
 
-        dimensions = value.image.size
+        try:
+            image = value.image
+        except AttributeError:
+            image = Image.open(value)
+
+        dimensions = image.size
         if dimensions[0] > self.max_pixels:
             raise forms.ValidationError(
                 _('Maximum allowed width is %(max_pixels)spx') % {'max_pixels': self.max_pixels}
