@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import List, Optional, Type
 
 from django.db import models
 from django.db.models.options import Options
@@ -93,3 +93,10 @@ def safe_bulk_upsert(
         sync=sync,
         native=native
     )
+
+
+def limit_queryset(queryset: models.QuerySet, limit: int) -> Optional[List]:
+    queryset = list(queryset[:limit + 1])
+    if len(queryset) > limit:
+        return None
+    return queryset
