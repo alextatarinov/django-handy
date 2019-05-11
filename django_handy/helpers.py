@@ -1,3 +1,4 @@
+import collections
 import mimetypes
 from collections import Sized
 from decimal import Decimal
@@ -5,7 +6,6 @@ from functools import wraps
 from typing import Dict, Hashable, Iterable, List
 from urllib.parse import parse_qs, quote, urlencode, urlsplit, urlunsplit
 
-import collections
 from django.db import transaction
 from django.http import HttpResponse
 from django.utils.encoding import force_text
@@ -165,17 +165,7 @@ def join_not_empty(separator, *args):
 
 
 def unique_ordered(sequence: Iterable[Hashable]) -> List:
-    """
-       Get list of unique values from sequence,
-        preserving order when the value first occurred in original sequence
-    """
-    seen = set()
-    unique = []
-    for x in sequence:
-        if x not in seen:
-            unique.append(x)
-            seen.add(x)
-    return unique
+    return list(dict.fromkeys(sequence))
 
 
 class UpdateDict(dict):
