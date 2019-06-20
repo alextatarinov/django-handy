@@ -168,7 +168,7 @@ def unique_ordered(sequence: Iterable[Hashable]) -> List:
     return list(dict.fromkeys(sequence))
 
 
-class UpdateDict(dict):
+class UpdateDict(collections.UserDict):
     def __init__(self, update_data, instance):
         super().__init__()
         self.update_data = update_data
@@ -178,12 +178,6 @@ class UpdateDict(dict):
         if item in self.update_data:
             return self.update_data[item]
         return getattr(self.instance, item)
-
-    def get(self, item, default=None):
-        try:
-            return self[item]
-        except AttributeError:
-            return default
 
 
 def get_unique_objs(objs: List[object], unique_attrs: List[str]) -> List[object]:
