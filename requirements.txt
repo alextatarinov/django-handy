@@ -3,5 +3,6 @@ twine
 djangorestframework>=3.8
 Django>=1.11
 django-manager-utils
+requests
 psycopg2
 Pillow

@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from typing import List, Optional, Type
 
 from django.db import models
@@ -95,8 +96,35 @@ def safe_bulk_upsert(
     )
 
 
+def parse_upsert_result(upsert_result, queryset):
+    created_ids = set(created.id for created in upsert_result.created)
+    updated_ids = set(updated.id for updated in upsert_result.updated)
+    changed_objects = queryset.filter(id__in=created_ids | updated_ids)
+
+    created_objects = (obj for obj in changed_objects if obj.id in created_ids)
+    updated_objects = (obj for obj in changed_objects if obj.id in updated_ids)
+
+    return created_objects, updated_objects
+
+
 def limit_queryset(queryset: models.QuerySet, limit: int) -> Optional[List]:
     queryset = list(queryset[:limit + 1])
     if len(queryset) > limit:
         return None
     return queryset
+
+
+@contextmanager
+def disconnect_signal(signal, receiver, sender, dispatch_uid=None, weak=True):
+    signal.disconnect(
+        receiver=receiver,
+        sender=sender,
+        dispatch_uid=dispatch_uid,
+    )
+    yield
+    signal.connect(
+        receiver=receiver,
+        sender=sender,
+        dispatch_uid=dispatch_uid,
+        weak=weak
+    )

@@ -222,3 +222,24 @@ def call_on_commit(func):
         transaction.on_commit(lambda: func(*args, **kwargs))
 
     return handle
+
+
+def generate_unique_name(taken_names, max_length, initial):
+    """Make unique name by adding 2, 3, etc. to the end"""
+    name = initial
+    add_number = 2
+    while name in taken_names:
+        name = f'{initial} {add_number}'
+
+        # Strip some chars from initial and reset
+        if len(name) > max_length:
+            initial = initial[:-1]
+
+            name = initial  # Should set here, otherwise while loop may finish without updating `name`
+            add_number = 2
+            continue
+
+        add_number += 1
+
+    assert len(name) <= max_length
+    return name

@@ -33,3 +33,8 @@ def mailto(address, text=None):
     return mark_safe(
         f'<a href="mailto:{address}">{text or address}</a>'
     )
+
+
+@register.filter(name='getattr')
+def getattrfilter(obj, attr):
+    return getattr(obj, attr)
