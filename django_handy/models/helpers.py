@@ -1,4 +1,3 @@
-from contextlib import contextmanager
 from typing import List, Optional, Type
 
 from django.db import models
@@ -112,19 +111,3 @@ def limit_queryset(queryset: models.QuerySet, limit: int) -> Optional[List]:
     if len(queryset) > limit:
         return None
     return queryset
-
-
-@contextmanager
-def disconnect_signal(signal, receiver, sender, dispatch_uid=None, weak=True):
-    signal.disconnect(
-        receiver=receiver,
-        sender=sender,
-        dispatch_uid=dispatch_uid,
-    )
-    yield
-    signal.connect(
-        receiver=receiver,
-        sender=sender,
-        dispatch_uid=dispatch_uid,
-        weak=weak
-    )
