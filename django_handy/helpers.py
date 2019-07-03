@@ -157,6 +157,10 @@ def any_not_empty(obj, *attrs):
     return any(not is_empty(get_attribute(obj, field)) for field in attrs)
 
 
+def first_not_empty(iterator, default=None):
+    return next((it for it in iterator if not is_empty(it)), default)
+
+
 def join_not_empty(separator, *args):
     """
        Like str.join, but ignores empty values to prevent duplicated separator
