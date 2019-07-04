@@ -141,12 +141,20 @@ def is_empty(val):
     return False
 
 
+def is_not_empty(val):
+    return not is_empty(val)
+
+
+def _attributes(obj, *attrs):
+    return (get_attribute(obj, field) for field in attrs)
+
+
 def all_not_empty(obj, *attrs):
     """
         If all attrs of obj returns False for is_empty check, returns True.
         Otherwise, returns False
     """
-    return all(not is_empty(get_attribute(obj, field)) for field in attrs)
+    return all(map(is_not_empty, _attributes(obj, *attrs)))
 
 
 def any_not_empty(obj, *attrs):
@@ -154,18 +162,14 @@ def any_not_empty(obj, *attrs):
         If at least one of the attrs of obj returns False for is_empty check, returns True.
         Otherwise, returns False
     """
-    return any(not is_empty(get_attribute(obj, field)) for field in attrs)
-
-
-def first_not_empty(iterator, default=None):
-    return next((it for it in iterator if not is_empty(it)), default)
+    return any(map(is_not_empty, _attributes(obj, *attrs)))
 
 
 def join_not_empty(separator, *args):
     """
        Like str.join, but ignores empty values to prevent duplicated separator
     """
-    return separator.join(arg for arg in args if not is_empty(arg))
+    return separator.join(arg for arg in args if is_not_empty(arg))
 
 
 def unique_ordered(sequence: Iterable[Hashable]) -> List:
