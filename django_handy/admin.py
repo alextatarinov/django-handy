@@ -1,10 +1,9 @@
-from itertools import chain
-
 from django.contrib.admin.utils import flatten_fieldsets
 from django.db.models.fields import Field
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.inspect import get_func_args
+from itertools import chain
 
 from .helpers import get_attribute, has_attribute
 from .models.helpers import is_editable
@@ -45,8 +44,7 @@ def foreign_field(field_name, short_description=None, admin_order_field=None, bo
 
     # Set attribute so we can get is outside
     accessor.attribute = field_name
-    short_description = short_description or field_name.replace('.', ' ').replace('_', ' ')
-    short_description = short_description.capitalize()
+    short_description = short_description or field_name.replace('.', ' ').replace('_', ' ').capitalize()
     accessor.short_description = short_description
     accessor.admin_order_field = admin_order_field
     accessor.boolean = boolean
