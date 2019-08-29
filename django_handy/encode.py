@@ -60,7 +60,8 @@ class Encoder:
         """
         string = ''
         while len(string) < self.length:
-            string += self.valid_chars[num % self.base]
+            # It is better to prepend chars to avoid 1st char repetition
+            string = self.valid_chars[num % self.base] + string
             num //= self.base
         return string
 
