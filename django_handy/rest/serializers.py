@@ -10,7 +10,7 @@ class EmptySerializer(serializers.Serializer):
 # noinspection PyAbstractClass
 class ReCaptchaSerializer(serializers.Serializer):
     SECRET = None
-    recaptcha = serializers.CharField(max_length=500, write_only=True)
+    recaptcha = serializers.CharField(write_only=True)
 
     def validate_recaptcha(self, recaptcha):
         data = {
