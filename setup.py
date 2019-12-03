@@ -52,7 +52,7 @@ setup(
     packages=[
         'django_handy'
     ],
-    install_requires=['Django>=1.11', 'djangorestframework>=3.8', 'django-manager-utils', 'requests', 'Pillow'],
+    install_requires=['Django>=1.11', 'djangorestframework>=3.6', 'django-manager-utils', 'requests', 'Pillow'],
     include_package_data=True,
     keywords='django-handy',
     classifiers=[
@@ -70,5 +70,5 @@ setup(
         'Framework :: Django :: 2.1',
     ],
     zip_safe=False,
-    tests_require=['Django>=1.11', 'djangorestframework>=3.8', 'django-manager-utils', 'psycopg2'],
+    tests_require=['Django>=1.11', 'djangorestframework>=3.6', 'django-manager-utils', 'psycopg2'],
 )

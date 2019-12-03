@@ -1,6 +1,6 @@
 tox
 twine
-djangorestframework>=3.8
+djangorestframework>=3.6
 Django>=1.11
 django-manager-utils
 requests
