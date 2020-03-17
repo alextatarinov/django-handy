@@ -23,6 +23,8 @@ class ModifiedDjangoPaginator(DjangoPaginator):
 class DefaultPaginator(PageNumberPagination):
     """Use optimized .count() and add page number to response"""
     page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 300
     django_paginator_class = ModifiedDjangoPaginator
 
     def get_paginated_response(self, data):
