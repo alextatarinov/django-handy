@@ -1,5 +1,11 @@
 from django.db import models
+
 from rest_framework import serializers
+
+
+# noinspection PyAbstractClass
+class EmptySerializer(serializers.Serializer):
+    pass
 
 
 # noinspection PyUnresolvedReferences
