@@ -4,6 +4,7 @@ from django.core.paginator import Paginator as DjangoPaginator
 from django.utils.functional import cached_property
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 
 
 def _get_count(queryset):
@@ -40,7 +41,7 @@ class DefaultPaginator(PageNumberPagination):
 
 class LimitOffsetPaginator(LimitOffsetPagination):
     """Use optimized .count()"""
-    default_limit = 6
+    default_limit = api_settings.PAGE_SIZE or 6
 
     def get_count(self, queryset):
         return _get_count(queryset)

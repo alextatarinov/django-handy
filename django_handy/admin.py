@@ -1,12 +1,12 @@
+from itertools import chain
+
 from django.contrib.admin.utils import flatten_fieldsets
 from django.db.models.fields import Field
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.inspect import get_func_args
-from itertools import chain
 
-from .helpers import get_attribute, has_attribute
-from .models.helpers import is_editable
+from django_handy.attrs import get_attribute, has_attribute
 
 
 class ChangeUrl:
@@ -74,7 +74,7 @@ class ReadOnlyFieldsAdminMixin:
             fields = [
                 field.name for field in
                 sorted(chain(opts.concrete_fields, sortable_private_fields, opts.many_to_many))
-                if is_editable(field)
+                if field.editable and not field.auto_created
             ]
 
         exclude = self.get_exclude(request, obj)

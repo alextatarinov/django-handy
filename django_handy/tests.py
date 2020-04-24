@@ -1,5 +1,6 @@
 import unittest
 
+from django.db import connection
 from django.test.runner import DiscoverRunner
 
 
@@ -13,3 +14,9 @@ class FixedTestLoader(unittest.TestLoader):
 
 class FixedDiscoverRunner(DiscoverRunner):
     test_loader = FixedTestLoader()
+
+
+def run_on_commit():
+    while connection.run_on_commit:
+        _, func = connection.run_on_commit.pop(0)
+        func()

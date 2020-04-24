@@ -1,31 +1,12 @@
 from django import template
+from django.conf import settings
+from django.templatetags import static
 from django.utils.safestring import mark_safe
 
-from ..format import humanize, strip_zeros
-from ..helpers import is_empty
+from django_handy.url import simple_urljoin
 
 
 register = template.Library()
-
-
-@register.filter
-def or_dash(value):
-    if is_empty(value):
-        return '-'
-    return value
-
-
-@register.filter(name='strip_zeros')
-def strip_zeros_filter(val, keep=0):
-    if is_empty(val):
-        return ''
-
-    return str(strip_zeros(val, keep=keep))
-
-
-@register.filter(name='humanize')
-def humanize_filter(field_name):
-    return humanize(field_name)
 
 
 @register.simple_tag
@@ -35,6 +16,13 @@ def mailto(address, text=None):
     )
 
 
-@register.filter(name='getattr')
-def getattrfilter(obj, attr):
-    return getattr(obj, attr)
+if getattr(settings, 'HOST', None):
+    class FullStaticNode(static.StaticNode):
+        def url(self, context):
+            relative_url = super().url(context)
+            return simple_urljoin(settings.HOST, relative_url)
+
+
+    @register.tag('fullstatic')
+    def do_static(parser, token):
+        return FullStaticNode.handle_token(parser, token)

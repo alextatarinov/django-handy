@@ -1,31 +1,23 @@
-import requests
+from django.db import models
 from rest_framework import serializers
 
 
-# noinspection PyAbstractClass
-class EmptySerializer(serializers.Serializer):
-    pass
+# noinspection PyUnresolvedReferences
+class SerializerRequestMixin:
+    @property
+    def request(self):
+        return self.context['request']
 
 
-# noinspection PyAbstractClass
-class ReCaptchaSerializer(serializers.Serializer):
-    SECRET = None
-    recaptcha = serializers.CharField(write_only=True)
+class SelectObjectsSerializer(serializers.Serializer):
+    ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=0),
+        min_length=1,
+    )
 
-    def validate_recaptcha(self, recaptcha):
-        data = {
-            'secret': self.SECRET,
-            'response': recaptcha
-        }
-        try:
-            response = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data, timeout=10)
-            result = response.json()
-
-            if not result['success']:
-                raise serializers.ValidationError('reCAPTCHA is not valid')
-
-        except requests.Timeout:
-            pass
-
-        # Do not add recaptcha to validated_data - it is useless
-        raise serializers.SkipField
+    @property
+    def selected_objects(self) -> models.QuerySet:
+        objects = self.context['view'].get_queryset()
+        ids = self.validated_data.get('ids', [])
+        objects = objects.filter(id__in=ids)
+        return objects

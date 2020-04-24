@@ -1,43 +1,9 @@
 from PIL import Image
-from django.core.exceptions import ValidationError
 from django.core.validators import BaseValidator
 from django.forms import forms
 from django.template.defaultfilters import filesizeformat
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext as _
-
-
-class UpperCasePasswordValidator:
-    """Validate whether the password contains capital letter."""
-
-    def validate(self, password, user=None):
-        if not any(d.isupper() for d in password):
-            raise ValidationError(
-                _('This password does not contains capital letter.'),
-                code='password_no_capital_letter',
-            )
-
-    def get_help_text(self):
-        return _('Your password should contain at least one capital letter.')
-
-
-class MaximumLengthPasswordValidator:
-    """Validate whether the password is of a maximum length."""
-
-    def __init__(self, max_length=20):
-        self.max_length = max_length
-
-    def validate(self, password, user=None):
-        if len(password) > self.max_length:
-            raise ValidationError(
-                _(
-                    'This password is too long. It must contain at most %(max_length)d characters.'
-                ) % {'max_length': self.max_length},
-                code='password_too_long'
-            )
-
-    def get_help_text(self):
-        return _('Your password must contain at most %(max_length)d characters.') % {'max_length': self.max_length}
 
 
 class MinValueExclusionValidator(BaseValidator):

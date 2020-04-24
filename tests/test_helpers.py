@@ -1,12 +1,10 @@
-from copy import copy
 from types import SimpleNamespace
 
 from django.test import TestCase
 
-from django_handy.helpers import (
-    all_not_empty, any_not_empty, bulk_dict_update, get_attribute, has_attribute, is_empty, join_not_empty,
-    simple_urljoin, unique_ordered,
-)
+from django_handy.attrs import get_attribute, has_attribute, is_empty
+from django_handy.unique import unique_ordered
+from django_handy.url import simple_urljoin
 
 
 class TestHelpers(TestCase):
@@ -80,14 +78,6 @@ class TestHelpers(TestCase):
         self.assertEqual(has_attribute(self.person_dict, 'surname'), False)
         self.assertEqual(has_attribute(self.person_dict, 'address.country'), False)
 
-    def test_bulk_dict_update(self):
-        dicts = [
-            copy(self.person_dict), copy(self.person_dict['address'])
-        ]
-        bulk_dict_update(dicts, {'id': 10})
-        self.assertEqual(dicts[0]['id'], 10)
-        self.assertEqual(dicts[1]['id'], 10)
-
     def test_is_empty(self):
         empty = [
             None, '', [], tuple(), dict(), set()
@@ -100,38 +90,6 @@ class TestHelpers(TestCase):
 
         for ne in not_empty:
             self.assertEqual(is_empty(ne), False)
-
-    def test_all_not_empty(self):
-        data = {
-            'name': 'Bob',
-            'surname': None,
-            'address': {
-                'city': 'New York',
-                'building': 0,
-                'apartments': None
-            },
-        }
-
-        self.assertEqual(all_not_empty(data, 'name', 'address.building'), True)
-        self.assertEqual(all_not_empty(data, 'name', 'address.apartments'), False)
-
-    def test_any_not_empty(self):
-        data = {
-            'name': 'Bob',
-            'surname': None,
-            'address': {
-                'city': 'New York',
-                'building': 0,
-                'apartments': None
-            },
-        }
-
-        self.assertEqual(any_not_empty(data, 'name', 'address.apartments'), True)
-        self.assertEqual(any_not_empty(data, 'surname', 'address.apartments'), False)
-
-    def test_join_not_empty(self):
-        self.assertEqual(join_not_empty(', ', 'New York', '', 'Baker Street', None), 'New York, Baker Street')
-        self.assertEqual(join_not_empty(', '), '')
 
     def test_unique_ordered(self):
         self.assertEqual(unique_ordered([8, 1, 2, 2, 4, 5, 4, 8]), [8, 1, 2, 4, 5])
