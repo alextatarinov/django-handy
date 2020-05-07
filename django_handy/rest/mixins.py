@@ -10,5 +10,5 @@ class HiddenAttributesMeta(type):
         return super().__getattribute__(name)
 
 
-class PutModelMixin(metaclass=HiddenAttributesMeta, UpdateModelMixin):
+class PutModelMixin(UpdateModelMixin, metaclass=HiddenAttributesMeta):
     hidden_attributes = ['partial_update']
