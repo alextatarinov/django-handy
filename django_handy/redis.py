@@ -3,7 +3,6 @@ import hashlib
 import logging
 from collections import Iterable
 from collections import Mapping
-from functools import lru_cache
 from functools import wraps
 from typing import Callable
 from typing import Optional
@@ -78,7 +77,6 @@ def cache_memoize(
     prefix: Optional[int] = None,
     key_maker: KeyMakerType = _make_key_id,
     lock_timeout=None,
-    local_cache_maxsize=128
 ):
     def factory(func):
         key_prefix = f'cache_memoize:{prefix or func.__name__}'
@@ -105,6 +103,6 @@ def cache_memoize(
             cache.delete(cache_key)
 
         decorator.invalidate = invalidate
-        return lru_cache(maxsize=local_cache_maxsize)(decorator)
+        return decorator
 
     return factory
