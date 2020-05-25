@@ -48,7 +48,7 @@ setup(
     long_description=open('README.rst').read(),
     author='Alexandr Tatarinov',
     author_email='tatarinov1997@gmail.com',
-    url='https://github.com/tatarinov1997/django-handy',
+    url='https://github.com/alextatarinov/django-handy',
     packages=[
         'django_handy'
     ],
