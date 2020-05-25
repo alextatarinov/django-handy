@@ -4,5 +4,5 @@ djangorestframework>=3.9
 Django>=2.2
 django-manager-utils
 requests
-psycopg2
+psycopg2-binary
 Pillow
