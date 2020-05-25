@@ -1,8 +1,7 @@
-from collections import OrderedDict
-
 from django.core.paginator import Paginator as DjangoPaginator
 from django.utils.functional import cached_property
-from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
@@ -29,14 +28,14 @@ class DefaultPaginator(PageNumberPagination):
     django_paginator_class = ModifiedDjangoPaginator
 
     def get_paginated_response(self, data):
-        return Response(OrderedDict([
-            ('count', self.page.paginator.count),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('page', self.page.number),
-            ('page_size', self.get_page_size(self.request)),
-            ('results', data),
-        ]))
+        return Response({
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'page': self.page.number,
+            'page_size': self.get_page_size(self.request),
+            'results': data,
+        })
 
 
 class LimitOffsetPaginator(LimitOffsetPagination):
