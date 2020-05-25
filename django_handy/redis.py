@@ -13,11 +13,14 @@ from redis.exceptions import LockError
 
 
 logger = logging.getLogger(__name__)
-redis_client = cache.client
 
 NO_CACHE = object()
 DEFAULT_LOCK_TIMEOUT = 10
 KeyMakerType = Callable[[Iterable, Mapping], str]
+
+
+def redis_client(write=True):
+    return cache.client.get_client(write=write)
 
 
 def _make_key_id(*args, **kwargs):
@@ -37,7 +40,7 @@ def use_lock(key, timeout=DEFAULT_LOCK_TIMEOUT, blocking_timeout=None):
         timeout = DEFAULT_LOCK_TIMEOUT
 
     try:
-        with redis_client.lock(f'use_lock:{key}', timeout=timeout, blocking_timeout=blocking_timeout):
+        with redis_client().lock(f'use_lock:{key}', timeout=timeout, blocking_timeout=blocking_timeout):
             yield
     except LockError as exc:
         message = str(exc)
