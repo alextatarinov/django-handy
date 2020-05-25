@@ -1,10 +1,10 @@
 import contextlib
 import hashlib
 import logging
-from collections import Iterable
-from collections import Mapping
 from functools import wraps
 from typing import Callable
+from typing import Iterable
+from typing import Mapping
 from typing import Optional
 
 from django.core.cache import cache
@@ -36,30 +36,47 @@ def _hash(key):
 
 @contextlib.contextmanager
 def use_lock(key, timeout=DEFAULT_LOCK_TIMEOUT, blocking_timeout=None):
+    """
+    If blocking_timeout is specified, will proceed after
+    blocking_timeout even without the lock obtained.
+    Check the return value and abort if needed.
+    """
+
     if timeout is None:  # Prevent locks without timeout set - it is too dangerous if the process dies
         timeout = DEFAULT_LOCK_TIMEOUT
 
+    lock = redis_client().lock(f'use_lock:{key}', timeout=timeout, blocking_timeout=blocking_timeout)
+    acquired = lock.acquire(blocking=True)
     try:
-        with redis_client().lock(f'use_lock:{key}', timeout=timeout, blocking_timeout=blocking_timeout):
-            yield
-    except LockError as exc:
-        message = str(exc)
-        if 'Unable to acquire lock within the time specified' not in message:
-            logger.exception(message)
+        yield acquired
+    finally:
+        if not acquired:
+            return
+
+        # Don't want failed lock release to break the whole application
+        try:
+            lock.release()
+        except LockError as exc:
+            logger.exception(str(exc))
 
 
-def use_lock_decorator(
+def with_lock(
+    key,
     timeout,
-    prefix=None,
     blocking_timeout=None,
-    key_maker: KeyMakerType = _make_key_id
+    proceed_without_lock=False,
 ):
+    """
+    If blocking_timeout is specified, and the lock is not obtained after blocking_timeout,
+    behavior will depend on the proceed_without_lock.
+    """
+
     def factory(func):
         @wraps(func)
         def decorator(*args, **kwargs):
-            key_prefix = prefix or func.__name__
-            key_id = _hash(key_maker(*args, **kwargs))
-            with use_lock(f'{key_prefix}:{key_id}', timeout, blocking_timeout):
+            with use_lock(key, timeout, blocking_timeout) as acquired:
+                if not (acquired or proceed_without_lock):
+                    return None
                 return func(*args, **kwargs)
 
         return decorator
@@ -68,18 +85,15 @@ def use_lock_decorator(
 
 
 def ensure_single(key, timeout):
-    return use_lock(key, timeout, blocking_timeout=0)
-
-
-def ensure_single_decorator(timeout, prefix=None, key_maker: KeyMakerType = _make_key_id):
-    return use_lock_decorator(timeout, prefix, blocking_timeout=0, key_maker=key_maker)
+    """Ensure function executes only single time simultaneously, other executions are aborted immediately"""
+    return with_lock(key, timeout, blocking_timeout=0, proceed_without_lock=False)
 
 
 def cache_memoize(
     timeout: Optional[int] = None,
     prefix: Optional[int] = None,
     key_maker: KeyMakerType = _make_key_id,
-    lock_timeout=None,
+    calculation_time=None,
 ):
     def factory(func):
         key_prefix = f'cache_memoize:{prefix or func.__name__}'
@@ -94,7 +108,7 @@ def cache_memoize(
             result = cache.get(cache_key, NO_CACHE)
 
             if result is NO_CACHE:
-                with use_lock(cache_key, timeout=lock_timeout):
+                with use_lock(cache_key, timeout=calculation_time):
                     result = cache.get(cache_key, NO_CACHE)
                     if result is NO_CACHE:
                         result = func(*args, **kwargs)
