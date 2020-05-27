@@ -90,15 +90,26 @@ def ensure_single(key, timeout):
 
 
 def cache_memoize(
-    timeout: Optional[int] = None,
+    timeout: Optional[int],
+    fresh_after: Optional[int] = 0,
     prefix: Optional[int] = None,
-    key_maker: KeyMakerType = _make_key_id,
-    calculation_time=None,
+    key_maker: Optional[KeyMakerType] = _make_key_id,
+    calculation_time=DEFAULT_LOCK_TIMEOUT,
 ):
+    if timeout is None and fresh_after:
+        raise ValueError('fresh_after can only be specified when timeout is set')
+
+    if fresh_after < 0:
+        raise ValueError('fresh_after must be positive number')
+
     def factory(func):
         key_prefix = f'cache_memoize:{prefix or func.__name__}'
 
         def _make_cache_key(*args, **kwargs):  # noqa: WPS430
+            # Allow to provide full key via key_prefix
+            if key_maker is None:
+                return key_prefix
+
             cache_key = _hash(key_maker(*args, **kwargs))
             return f'{key_prefix}:{cache_key}'
 
@@ -107,17 +118,34 @@ def cache_memoize(
             cache_key = _make_cache_key(*args, **kwargs)
             result = cache.get(cache_key, NO_CACHE)
 
-            if result is NO_CACHE:
-                with use_lock(cache_key, timeout=calculation_time):
+            semi_fresh = False
+            if result is not NO_CACHE:
+                semi_fresh = fresh_after and (cache.ttl(cache_key) < fresh_after)
+                if not semi_fresh:
+                    # Still absolutely fresh
+                    return result
+
+            # Let one process to recalculate and others to return semi-fresh value (if exists),
+            # else wait for calculation
+            blocking_timeout = 0 if semi_fresh else None
+            with use_lock(cache_key, timeout=calculation_time, blocking_timeout=blocking_timeout) as acquired:
+                if not acquired:
+                    # Only possible with semi_fresh = True (blocking_timeout = 0, no waiting for the lock)
+                    return result
+
+                if not semi_fresh:
+                    # Check value wan't calculated while we were waiting for the lock
                     result = cache.get(cache_key, NO_CACHE)
-                    if result is NO_CACHE:
-                        result = func(*args, **kwargs)
-                        cache.set(cache_key, result, timeout)
+
+                # This process was selected for value calculation
+                if semi_fresh or result is NO_CACHE:
+                    result = func(*args, **kwargs)
+                    cache.set(cache_key, result, timeout + fresh_after)
             return result
 
         def invalidate(*args, **kwargs):  # noqa: WPS430
             cache_key = _make_cache_key(*args, **kwargs)
-            cache.delete(cache_key)
+            return cache.delete(cache_key)
 
         decorator.invalidate = invalidate
         return decorator
