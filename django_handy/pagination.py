@@ -18,7 +18,7 @@ class DefaultPaginator(PageNumberPagination):
             'next': self.get_next_link(),
             'previous': self.get_previous_link(),
             'page': self.page.number,
-            'page_size': self.get_page_size(self.request),
+            self.page_size_query_param: self.get_page_size(self.request),
             'results': data,
         })
 
