@@ -19,7 +19,7 @@ class SubquerySum(Subquery):
     def __init__(self, queryset, field_name, **kwargs):
         queryset = queryset.order_by()
         if not queryset.query.values_select:
-            queryset = queryset.values('field_name')
+            queryset = queryset.values(field_name)
         super().__init__(queryset, field_name=field_name, **kwargs)
 
 
