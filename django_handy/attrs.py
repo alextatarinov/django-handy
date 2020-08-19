@@ -2,6 +2,7 @@ import collections
 from typing import Sized
 
 
+# TODO: using . as a separator with dicts leads to ambiguity when keys contains dot. Use fields list instead
 def get_attribute(instance, name):
     """
         Similar to Python's built in `getattr(instance, attr)`,

@@ -1,6 +1,9 @@
-from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qs
+from urllib.parse import urlencode
+from urllib.parse import urlsplit
+from urllib.parse import urlunsplit
 
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 
 def simple_urljoin(*args):
@@ -22,7 +25,7 @@ def simple_urljoin(*args):
 
         add_leading_slash = add_trailing_slash = False
 
-        piece = force_text(piece)
+        piece = force_str(piece)
 
         if is_first and piece.startswith(sep):
             add_leading_slash = True

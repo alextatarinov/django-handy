@@ -1,4 +1,9 @@
-from django.utils.decorators import classproperty
+class classproperty:
+    def __init__(self, method=None):
+        self.fget = method
+
+    def __get__(self, instance, cls=None):
+        return self.fget(cls)
 
 
 class Members:
