@@ -1,59 +1,26 @@
-from urllib.parse import parse_qs
-from urllib.parse import urlencode
-from urllib.parse import urlsplit
-from urllib.parse import urlunsplit
-
-from django.utils.encoding import force_str
+from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
 
-def simple_urljoin(*args):
-    """
-        Joins url parts like 'https://', 'google.com/', '/search/' to https://google.com/search/
+def simple_urljoin(*parts, append_slash=False):
+    """Normalize url parts and join them with a slash."""
+    schemes, netlocs, paths, queries, fragments = zip(*(urlsplit(part) for part in parts))
+    scheme = _last(schemes)
+    netloc = _last(netlocs)
+    paths = [x for x in paths if x]
+    if scheme and not netloc and paths:
+        netloc, *paths = paths
+    path = '/'.join((x.strip('/') for x in paths))
+    append_slash = append_slash or (paths and parts[-1].endswith('/'))
+    if append_slash:
+        path += '/'
+    query = _last(queries)
+    fragment = _last(fragments)
+    return urlunsplit((scheme, netloc, path, query, fragment))
 
-        Treats parts ending on double slash as url beginning and ignores all parts before them.
-        Other parts are treated as path and joined with single slash.
 
-        Preserves single trailing and leading slash.
-    """
-    sep = '/'
-    protocol_sep = '://'
-    res = ''
-
-    for idx, piece in enumerate(args):
-        is_first = idx == 0
-        is_last = idx == len(args) - 1
-
-        add_leading_slash = add_trailing_slash = False
-
-        piece = force_str(piece)
-
-        if is_first and piece.startswith(sep):
-            add_leading_slash = True
-
-        if is_last and piece.endswith(sep):
-            add_trailing_slash = True
-
-        if not is_last:
-            add_trailing_slash = True
-
-        if piece.endswith(protocol_sep):
-            piece = piece.lstrip('/')
-            add_trailing_slash = False
-        else:
-            piece = piece.strip('/')
-
-        if add_leading_slash:
-            piece = sep + piece
-
-        if add_trailing_slash:
-            piece += sep
-
-        if protocol_sep in piece:
-            res = piece
-        else:
-            res += piece
-
-    return res
+def _last(sequence, default=''):
+    not_empty = [x for x in sequence if x]
+    return not_empty[-1] if not_empty else default
 
 
 def add_query(url: str, **params: str):

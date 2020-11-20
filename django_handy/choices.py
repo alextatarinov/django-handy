@@ -1,9 +1,4 @@
-class classproperty:
-    def __init__(self, method=None):
-        self.fget = method
-
-    def __get__(self, instance, cls=None):
-        return self.fget(cls)
+from django_handy.objs import classproperty
 
 
 class Members:

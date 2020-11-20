@@ -20,16 +20,6 @@ Install Django Handy::
 
     pip install django-handy
 
-Add it to your `INSTALLED_APPS`:
-
-.. code-block:: python
-
-    INSTALLED_APPS = (
-        ...
-        'django_handy',
-        ...
-    )
-
 Features
 --------
 

@@ -1,9 +1,7 @@
-from typing import List, Type
+from typing import List, Optional, Type
 
 from django.db import models
 from manager_utils import bulk_upsert as original_bulk_upsert
-
-from django_handy.unique import get_unique_objs
 
 
 def get_bulk_update_fields(cls: Type[models.Model], unique_fields: List[str]) -> List[str]:
@@ -30,7 +28,7 @@ not_provided = object()
 
 def bulk_upsert(
     queryset: models.QuerySet, model_objs: List[models.Model],
-    unique_fields: List[str], update_fields: List[str] = not_provided,
+    unique_fields: List[str], update_fields: Optional[List[str]] = not_provided,
     return_upserts: bool = False, return_upserts_distinct: bool = False,
     sync: bool = False, native: bool = False
 ):
@@ -41,29 +39,6 @@ def bulk_upsert(
     return original_bulk_upsert(
         queryset,
         model_objs=model_objs,
-        unique_fields=unique_fields,
-        update_fields=update_fields,
-        return_upserts=return_upserts,
-        return_upserts_distinct=return_upserts_distinct,
-        sync=sync,
-        native=native
-    )
-
-
-def safe_bulk_upsert(
-    queryset: models.QuerySet, model_objs: List[models.Model],
-    unique_fields: List[str], update_fields: List[str] = not_provided,
-    return_upserts: bool = False, return_upserts_distinct: bool = False,
-    sync: bool = False, native: bool = False
-):
-    """
-        Removes objs with duplicate unique fields to prevent IntegrityError.
-        Uses first unique obj encountered
-    """
-    # noinspection PyTypeChecker
-    return bulk_upsert(
-        queryset,
-        model_objs=get_unique_objs(model_objs, unique_fields),
         unique_fields=unique_fields,
         update_fields=update_fields,
         return_upserts=return_upserts,

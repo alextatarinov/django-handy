@@ -3,52 +3,11 @@ from itertools import chain
 from django.contrib.admin.utils import flatten_fieldsets
 from django.db.models.fields import Field
 from django.urls import reverse
-from django.utils.html import format_html
 from django.utils.inspect import get_func_args
-
-from django_handy.attrs import get_attribute, has_attribute
-
-
-class ChangeUrl:
-    def __init__(self, field, description=None):
-        self.field = field
-        self.short_description = description or field
-
-    def __call__(self, obj):
-        try:
-            obj = get_attribute(obj, self.field)
-        except AttributeError:
-            return '-'
-
-        if not obj:
-            return '-'
-
-        url = object_admin_rel_url(obj)
-        return format_html('<a href="{}">{}</a>', url, obj)
 
 
 def object_admin_rel_url(obj):
     return reverse('admin:%s_%s_change' % (obj._meta.app_label, obj._meta.model_name), args=(obj.pk,))
-
-
-def foreign_field(field_name, short_description=None, admin_order_field=None, boolean=False):
-    assert '__' not in field_name, 'use . as delimiter for traversing relations'
-
-    def accessor(obj):
-        if not has_attribute(obj, field_name):
-            return None
-        attribute = get_attribute(obj, field_name)
-        if callable(attribute):
-            return attribute()
-        return attribute
-
-    # Set attribute so we can get is outside
-    accessor.attribute = field_name
-    short_description = short_description or field_name.replace('.', ' ').replace('_', ' ').capitalize()
-    accessor.short_description = short_description
-    accessor.admin_order_field = admin_order_field
-    accessor.boolean = boolean
-    return accessor
 
 
 class ReadOnlyFieldsAdminMixin:
@@ -96,8 +55,6 @@ class NoAddDeleteAdminMixin:
         return False
 
 
-class ReadOnlyAdminMixin(ReadOnlyFieldsAdminMixin, NoAddDeleteAdminMixin):
+class ReadOnlyAdminMixin(NoAddDeleteAdminMixin):
     def has_change_permission(self, request, obj=None):
-        if hasattr(self, 'has_view_permission'):  # Django >= 2.1
-            return False
-        return super().has_change_permission(request, obj=obj)
+        return False

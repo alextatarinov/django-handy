@@ -9,7 +9,7 @@ from django import forms
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from django_handy.unique import unique_ordered
+from django_handy.objs import unique_ordered
 from django_handy.validation import MinValueExclusionValidator
 
 
@@ -44,12 +44,7 @@ class EmailLowerCaseField(LowerCaseFieldMixin, models.EmailField):
     pass
 
 
-class DefaultDecimalField(models.DecimalField):
-    def __init__(self, max_digits=15, decimal_places=2, **kwargs):
-        super().__init__(max_digits=max_digits, decimal_places=decimal_places, **kwargs)
-
-
-class PositiveDecimalField(DefaultDecimalField):
+class PositiveDecimalField(models.DecimalField):
     default_validators = [MinValueValidator(0)]
 
     def __init__(self, no_zero=False, **kwargs):

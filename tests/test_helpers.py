@@ -1,9 +1,8 @@
-from types import SimpleNamespace
+from django.test import TestCase
 
 from django.test import TestCase
 
-from django_handy.attrs import get_attribute, has_attribute, is_empty
-from django_handy.unique import unique_ordered
+from django_handy.objs import is_empty, unique_ordered
 from django_handy.url import simple_urljoin
 
 
@@ -51,32 +50,11 @@ class TestHelpers(TestCase):
             'https://google.com/search/all',
 
             'search/all',
-            '/search/all',
+            'search/all',
         )
 
         for input_args, expected_out in zip(inputs, expected):
-            self.assertEqual(simple_urljoin(*input_args), expected_out)
-
-    def test_get_attribute(self):
-        address_obj = SimpleNamespace(**self.address_dict)
-        person_obj = SimpleNamespace(name='Bob', address=address_obj)
-
-        for person in [person_obj, self.person_dict]:
-            self.assertEqual(get_attribute(person, 'name'), self.person_dict['name'])
-            self.assertEqual(get_attribute(person, 'address.city'), self.address_dict['city'])
-
-            with self.assertRaises(AttributeError):
-                get_attribute(person, 'surname')
-
-            with self.assertRaises(AttributeError):
-                get_attribute(person, 'address.country')
-
-    def test_has_attribute(self):
-        self.assertEqual(has_attribute(self.person_dict, 'name'), True)
-        self.assertEqual(has_attribute(self.person_dict, 'address.city'), True)
-
-        self.assertEqual(has_attribute(self.person_dict, 'surname'), False)
-        self.assertEqual(has_attribute(self.person_dict, 'address.country'), False)
+            self.assertEqual(expected_out, simple_urljoin(*input_args))
 
     def test_is_empty(self):
         empty = [

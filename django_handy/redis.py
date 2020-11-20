@@ -2,13 +2,11 @@ import contextlib
 import hashlib
 import logging
 from functools import wraps
-from typing import Callable
-from typing import Iterable
-from typing import Mapping
-from typing import Optional
+from typing import Callable, Iterable, Mapping, Optional
 
 from django.core.cache import cache
 from django.utils.encoding import force_bytes
+from django_redis import get_redis_connection
 from redis.exceptions import LockError
 
 
@@ -20,7 +18,7 @@ KeyMakerType = Callable[[Iterable, Mapping], str]
 
 
 def redis_client(write=True):
-    return cache.client.get_client(write=write)
+    return get_redis_connection(write=write)
 
 
 def _make_key_id(*args, **kwargs):
@@ -134,7 +132,7 @@ def cache_memoize(
                     return result
 
                 if not semi_fresh:
-                    # Check value wan't calculated while we were waiting for the lock
+                    # Check value wasn't calculated while we were waiting for the lock
                     result = cache.get(cache_key, NO_CACHE)
 
                 # This process was selected for value calculation
@@ -143,10 +141,15 @@ def cache_memoize(
                     cache.set(cache_key, result, timeout + fresh_after)
             return result
 
+        def set_cache(value, *args, **kwargs):  # noqa: WPS430
+            cache_key = _make_cache_key(*args, **kwargs)
+            return cache.set(cache_key, value, timeout + fresh_after)
+
         def invalidate(*args, **kwargs):  # noqa: WPS430
             cache_key = _make_cache_key(*args, **kwargs)
             return cache.delete(cache_key)
 
+        decorator.set_cache = set_cache
         decorator.invalidate = invalidate
         return decorator
 

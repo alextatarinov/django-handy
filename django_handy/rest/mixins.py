@@ -1,7 +1,7 @@
 from rest_framework.mixins import UpdateModelMixin
 
 
-class HiddenAttributesMeta(type):
+class _HiddenAttributesMeta(type):
     """Raise AttributeError when accessing hidden_attributes on class itself"""
 
     def __getattribute__(self, name):
@@ -10,5 +10,5 @@ class HiddenAttributesMeta(type):
         return super().__getattribute__(name)
 
 
-class PutModelMixin(UpdateModelMixin, metaclass=HiddenAttributesMeta):
+class PutModelMixin(UpdateModelMixin, metaclass=_HiddenAttributesMeta):
     hidden_attributes = ['partial_update']
