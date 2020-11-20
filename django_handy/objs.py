@@ -24,7 +24,7 @@ def unique_ordered(sequence: Iterable[Hashable]) -> List:
     return list(dict.fromkeys(sequence))
 
 
-def unique_objs(objs: List[object], unique_attrs: List[str]) -> List[object]:
+def unique_objs(objs: List[object], unique_attrs: List[str]) -> List:
     """
        Get list of unique objs from sequence,
         preserving order when the objs first occurred in original sequence.
