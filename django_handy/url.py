@@ -3,6 +3,7 @@ from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
 def simple_urljoin(*parts, append_slash=False):
     """Normalize url parts and join them with a slash."""
+    parts = list(map(str, parts))
     schemes, netlocs, paths, queries, fragments = zip(*(urlsplit(part) for part in parts))
     scheme = _last(schemes)
     netloc = _last(netlocs)

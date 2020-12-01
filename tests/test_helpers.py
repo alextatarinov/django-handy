@@ -27,6 +27,7 @@ class TestHelpers(TestCase):
             ['https://google.com', 'search/', 'all'],
             ['https://google.com', 'search', '/all'],
             ['https://google.com', 'search/', '/all'],
+            ['https://google.com', 'search/', 5],
 
             ['https://google.com', 'search', 'all/'],
             ['https://', 'google.com', 'search', 'all/'],
@@ -43,6 +44,7 @@ class TestHelpers(TestCase):
             'https://google.com/search/all',
             'https://google.com/search/all',
             'https://google.com/search/all',
+            'https://google.com/search/5',
 
             'https://google.com/search/all/',
             'https://google.com/search/all/',
