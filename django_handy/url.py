@@ -11,8 +11,10 @@ def simple_urljoin(*parts, append_slash=False):
     if scheme and not netloc and paths:
         netloc, *paths = paths
     path = '/'.join((x.strip('/') for x in paths))
-    append_slash = append_slash or (paths and parts[-1].endswith('/'))
-    if append_slash:
+
+    if paths and parts[0].startswith('/'):
+        path = '/' + path
+    if append_slash or (paths and parts[-1].endswith('/')):
         path += '/'
     query = _last(queries)
     fragment = _last(fragments)

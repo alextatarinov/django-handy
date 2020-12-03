@@ -52,7 +52,7 @@ class TestHelpers(TestCase):
             'https://google.com/search/all',
 
             'search/all',
-            'search/all',
+            '/search/all',
         )
 
         for input_args, expected_out in zip(inputs, expected):
