@@ -1,7 +1,12 @@
 from django.db import models
+from django.db.models import Avg
 from django.db.models import BooleanField
+from django.db.models import Count
 from django.db.models import ExpressionWrapper
+from django.db.models import Max
+from django.db.models import Min
 from django.db.models import Subquery
+from django.db.models import Sum
 
 
 class BooleanQ(ExpressionWrapper):
@@ -12,23 +17,40 @@ class BooleanQ(ExpressionWrapper):
         super().__init__(expression, output_field=None)
 
 
-class SubquerySum(Subquery):
-    template = '(SELECT SUM(%(field_name)s) FROM (%(subquery)s) _sub)'
-    output_field = models.IntegerField()
+class SubqueryAgg(Subquery):
+    template = '(SELECT %(func)s(%(field_name)s) FROM (%(subquery)s) _sub)'
 
-    def __init__(self, queryset, field_name, **kwargs):
+    def __init__(self, queryset, field_name, func, **kwargs):
         queryset = queryset.order_by()
         if not queryset.query.values_select:
             queryset = queryset.values(field_name)
-        super().__init__(queryset, field_name=field_name, **kwargs)
+        super().__init__(queryset, field_name=field_name, func=func, **kwargs)
 
 
-class SubqueryCount(Subquery):
-    template = '(SELECT COUNT(*) FROM (%(subquery)s) _sub)'
+class SubqueryAvg(SubqueryAgg):
+    def __init__(self, queryset, field_name, **kwargs):
+        super().__init__(queryset, field_name, func=Avg.function, **kwargs)
+
+
+class SubqueryMin(SubqueryAgg):
+    def __init__(self, queryset, field_name, **kwargs):
+        super().__init__(queryset, field_name, func=Min.function, **kwargs)
+
+
+class SubqueryMax(SubqueryAgg):
+    def __init__(self, queryset, field_name, **kwargs):
+        super().__init__(queryset, field_name, func=Max.function, **kwargs)
+
+
+class SubquerySum(SubqueryAgg):
+    def __init__(self, queryset, field_name, **kwargs):
+        super().__init__(queryset, field_name, func=Sum.function, **kwargs)
+
+
+class SubqueryCount(SubqueryAgg):
     output_field = models.IntegerField()
 
     def __init__(self, queryset, **kwargs):
-        queryset = queryset.order_by()
         if not queryset.query.values_select:
             queryset = queryset.values('pk')
-        super().__init__(queryset, **kwargs)
+        super().__init__(queryset, field_name='*', func=Count.function, **kwargs)
