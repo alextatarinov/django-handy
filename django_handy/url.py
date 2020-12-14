@@ -10,7 +10,7 @@ def simple_urljoin(*parts, append_slash=False):
     paths = [x for x in paths if x]
     if scheme and not netloc and paths:
         netloc, *paths = paths
-    path = '/'.join((x.strip('/') for x in paths))
+    path = '/'.join((x.strip('/') for x in paths if x.strip('/')))
 
     if paths and parts[0].startswith('/'):
         path = '/' + path

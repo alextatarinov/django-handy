@@ -36,6 +36,7 @@ class TestHelpers(TestCase):
 
             ['search', 'all'],
             ['/search', 'all'],
+            ['/search', '/', 'all', '/'],
         )
 
         expected = (
@@ -53,6 +54,7 @@ class TestHelpers(TestCase):
 
             'search/all',
             '/search/all',
+            '/search/all/',
         )
 
         for input_args, expected_out in zip(inputs, expected):
