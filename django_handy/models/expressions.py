@@ -1,3 +1,4 @@
+from django.core.exceptions import EmptyResultSet
 from django.db import models
 from django.db.models import Avg
 from django.db.models import BooleanField
@@ -7,6 +8,7 @@ from django.db.models import Max
 from django.db.models import Min
 from django.db.models import Subquery
 from django.db.models import Sum
+from django.db.models import Value
 
 
 class BooleanQ(ExpressionWrapper):
@@ -15,6 +17,12 @@ class BooleanQ(ExpressionWrapper):
     def __init__(self, *args, **kwargs):
         expression = models.Q(*args, **kwargs)
         super().__init__(expression, output_field=None)
+
+    def as_sql(self, compiler, connection):
+        try:
+            return super().as_sql(compiler, connection)
+        except EmptyResultSet:
+            return compiler.compile(Value(False))
 
 
 class SubqueryAgg(Subquery):
