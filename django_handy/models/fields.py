@@ -68,8 +68,9 @@ if ArrayField:
     class ChoicesUniqueArrayField(UniqueArrayField):
         def formfield(self, **kwargs):
             defaults = {
-                'form_class': forms.MultipleChoiceField,
+                'form_class': forms.TypedMultipleChoiceField,
                 'choices': self.base_field.choices,
+                'coerce': self.base_field.to_python,
                 'widget': forms.CheckboxSelectMultiple,
             }
             defaults.update(kwargs)
