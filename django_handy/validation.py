@@ -3,7 +3,7 @@ from django.core.validators import BaseValidator
 from django.forms import forms
 from django.template.defaultfilters import filesizeformat
 from django.utils.deconstruct import deconstructible
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 class MinValueExclusionValidator(BaseValidator):
