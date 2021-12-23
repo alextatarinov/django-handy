@@ -1,7 +1,6 @@
 import contextlib
 import logging
 from functools import wraps
-from typing import Callable, Iterable, Mapping
 
 from django_redis import get_redis_connection
 from redis.exceptions import LockError
@@ -9,9 +8,7 @@ from redis.exceptions import LockError
 
 logger = logging.getLogger(__name__)
 
-NO_CACHE = object()
 DEFAULT_LOCK_TIMEOUT = 10
-KeyMakerType = Callable[[Iterable, Mapping], str]
 
 
 def redis_client(write=True):
