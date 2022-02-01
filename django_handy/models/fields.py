@@ -6,11 +6,9 @@ except ImportError:
 import unicodedata
 
 from django import forms
-from django.core.validators import MinValueValidator
 from django.db import models
 
 from django_handy.objs import unique_ordered
-from django_handy.validation import MinValueExclusionValidator
 
 
 class LowerFieldDescriptor:
@@ -42,17 +40,6 @@ class LowerCaseFieldMixin:
 
 class EmailLowerCaseField(LowerCaseFieldMixin, models.EmailField):
     pass
-
-
-class PositiveDecimalField(models.DecimalField):
-    default_validators = [MinValueValidator(0)]
-
-    def __init__(self, no_zero=False, **kwargs):
-        if no_zero:
-            validators = kwargs.pop('validators', [])
-            validators.append(MinValueExclusionValidator(0))
-            kwargs['validators'] = validators
-        super().__init__(**kwargs)
 
 
 if ArrayField:

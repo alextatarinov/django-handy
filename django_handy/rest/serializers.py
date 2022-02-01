@@ -5,18 +5,6 @@ from django.db import models
 from rest_framework import serializers
 
 
-# noinspection PyAbstractClass
-class EmptySerializer(serializers.Serializer):
-    pass
-
-
-# noinspection PyUnresolvedReferences
-class SerializerRequestMixin:
-    @property
-    def request(self):
-        return self.context['request']
-
-
 class SelectObjectsSerializer(serializers.Serializer):
     ids = serializers.ListField(child=serializers.IntegerField(min_value=0))
 

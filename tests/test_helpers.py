@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.test import TestCase
 
 from django_handy.objs import is_empty, unique_ordered
-from django_handy.url import simple_urljoin
+from django_handy.url import join_url
 
 
 class TestHelpers(TestCase):
@@ -20,7 +20,7 @@ class TestHelpers(TestCase):
             'address': cls.address_dict
         }
 
-    def test_simple_urljoin(self):
+    def test_join_url(self):
         inputs = (
             ['https://google.com', 'search', 'all'],
             ['https://google.com', '/search', 'all'],
@@ -58,7 +58,7 @@ class TestHelpers(TestCase):
         )
 
         for input_args, expected_out in zip(inputs, expected):
-            self.assertEqual(expected_out, simple_urljoin(*input_args))
+            self.assertEqual(expected_out, join_url(*input_args))
 
     def test_is_empty(self):
         empty = [
